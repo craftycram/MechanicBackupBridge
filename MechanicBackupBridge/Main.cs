@@ -16,14 +16,9 @@ namespace MechanicBackupBridge
             Game.DisplayNotification("MechanicBackupBridge " + currentVersion + " loaded successfully");
             Game.LogTrivial("MechanicBackupBridge " + currentVersion + " loaded successfully");
 
-            AppDomain currentDomain = AppDomain.CurrentDomain;
-            AppDomain rageDomain = AppDomain.CreateDomain("rageDomain");
-
-            currentDomain.AssemblyResolve += new ResolveEventHandler(MyResolveEventHandler);
-
-            // This call will succeed in creating an instance of MyType since the
-            // assembly name is valid.
-            InstantiateMyTypeSucceed(currentDomain);
+            AppDomain rageDomain = AppDomain.CurrentDomain;
+            Type mechanicBackupType = typeof(MechanicBackup.API);
+            rageDomain.CreateInstanceAndUnwrap(mechanicBackupType.Assembly.FullName, mechanicBackupType.FullName);
 
         }
 
@@ -32,24 +27,5 @@ namespace MechanicBackupBridge
             Game.LogTrivial("MechanicBackupBridge unloaded");
         }
 
-        private static void InstantiateMyTypeSucceed(AppDomain domain)
-        {
-            try
-            {
-                string asmname = Assembly.GetCallingAssembly().FullName;
-                domain.CreateInstance(asmname, "MechanicBackup.API");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine();
-                Console.WriteLine(e.Message);
-            }
-        }
-
-        private static Assembly MyResolveEventHandler(object sender, ResolveEventArgs args)
-        {
-            Console.WriteLine("Resolving...");
-            return typeof(MechanicBackup.API).Assembly;
-        }
     }
 }
