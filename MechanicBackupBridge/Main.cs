@@ -16,15 +16,34 @@ namespace MechanicBackupBridge
             Game.DisplayNotification("MechanicBackupBridge " + currentVersion + " loaded successfully");
             Game.LogTrivial("MechanicBackupBridge " + currentVersion + " loaded successfully");
 
-            AppDomain rageDomain = AppDomain.CurrentDomain;
-            Type mechanicBackupType = typeof(MechanicBackup.API);
-            rageDomain.CreateInstanceAndUnwrap(mechanicBackupType.Assembly.FullName, mechanicBackupType.FullName);
-
+            AppDomain currentDomain = AppDomain.CurrentDomain;
+            currentDomain.AssemblyResolve += new ResolveEventHandler(MyResolveEventHandler);
+            InstantiateAPIBridge(currentDomain);
         }
 
         public override void Finally()
         {
             Game.LogTrivial("MechanicBackupBridge unloaded");
+        }
+
+        private static void InstantiateAPIBridge(AppDomain domain)
+        {
+            try
+            {
+                string asmname = Assembly.GetCallingAssembly().FullName;
+                domain.CreateInstance(asmname, "MechanicBackup");
+            }
+            catch (Exception e)
+            {
+                Game.LogTrivial("");
+                Game.LogTrivial(e.Message);
+            }
+        }
+
+        private static Assembly MyResolveEventHandler(object sender, ResolveEventArgs args)
+        {
+            Game.LogTrivial("Resolving...");
+            return typeof(MechanicBackup.API).Assembly;
         }
 
     }
