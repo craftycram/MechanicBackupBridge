@@ -2,6 +2,7 @@
 using Rage;
 using LSPD_First_Response.Mod.API;
 using System.Reflection;
+using System.IO;
 
 namespace MechanicBackupBridge
 {
@@ -16,9 +17,8 @@ namespace MechanicBackupBridge
             Game.DisplayNotification("MechanicBackupBridge " + currentVersion + " loaded successfully");
             Game.LogTrivial("MechanicBackupBridge " + currentVersion + " loaded successfully");
 
-            AppDomain currentDomain = AppDomain.CurrentDomain;
-            currentDomain.AssemblyResolve += new ResolveEventHandler(MyResolveEventHandler);
-            InstantiateAPIBridge(currentDomain);
+            AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
+
         }
 
         public override void Finally()
@@ -26,24 +26,14 @@ namespace MechanicBackupBridge
             Game.LogTrivial("MechanicBackupBridge unloaded");
         }
 
-        private static void InstantiateAPIBridge(AppDomain domain)
+        private static Assembly OnAssemblyResolve(object sender, ResolveEventArgs args)
         {
-            try
+            if (args.Name.StartsWith("MechanicBackup"))
             {
-                string asmname = Assembly.GetCallingAssembly().FullName;
-                domain.CreateInstance(asmname, "MechanicBackup");
+                return Assembly.Load(File.ReadAllBytes(@"Plugins\MechanicBackup.dll"));
             }
-            catch (Exception e)
-            {
-                Game.LogTrivial("");
-                Game.LogTrivial(e.Message);
-            }
-        }
 
-        private static Assembly MyResolveEventHandler(object sender, ResolveEventArgs args)
-        {
-            Game.LogTrivial("Resolving...");
-            return typeof(MechanicBackup.API).Assembly;
+            return null;
         }
 
     }

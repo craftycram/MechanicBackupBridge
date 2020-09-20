@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
 // die einer Assembly zugeordnet sind.
 [assembly: AssemblyTitle("MechanicBackupBridge")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A addon plugin for MechanicBackup allowing LSPDFR plugins to use the MechanicBackup API")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("craftycram")]
 [assembly: AssemblyProduct("MechanicBackupBridge")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
